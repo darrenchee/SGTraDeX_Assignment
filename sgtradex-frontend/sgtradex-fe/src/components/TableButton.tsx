@@ -1,6 +1,5 @@
 import React from 'react';
 import Button from '@mui/material/Button';
-import { Vessel } from '../interfaces/Vessel';
 
 export type Props = {
     id: number;
@@ -9,6 +8,7 @@ export type Props = {
     lat: number;
     lng: number;
     destination: string;
+    updateTrackedVessels: (imo: number) => void;
 };
 
 export default function TableButton(props: Props) {
@@ -20,6 +20,7 @@ export default function TableButton(props: Props) {
         console.log(props.lat);
         console.log(props.lng);
         console.log(props.destination);
+        props.updateTrackedVessels(props.imo);
     }
 
     return (

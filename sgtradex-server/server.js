@@ -2,9 +2,11 @@ const express = require('express')
 const http = require('http')
 const { Server } = require('socket.io');
 const cors = require('cors');
+let dummyData = require('./db.json')
 
 const app = express();
 app.use(cors());
+app.use(express.json());
 
 const server = http.createServer(app);
 const io = new Server(server, {
@@ -15,13 +17,28 @@ const io = new Server(server, {
 });
 
 io.on('connection', (socket) => {
-    console.log(`User Connected: ${socket.id}`);
+    socket.emit("retrieve_data", dummyData);
 
     socket.on("send_message", (data) => {
-        socket.broadcast.emit("receive_message", data)
+        socket.emit("receive_message", { test: 'sending back message' })
     })
 });
 
+app.post("/api/track", (req, res) => {
+
+})
+
+app.post("/api/updated-vessel-information", (req, res) => {
+    console.log("Received request body for /api/updated-vessel-information:", req.body);
+    const updatedVessel = req.body;
+    dummyData = dummyData.map(vessel => vessel.imo !== updatedVessel.imo ? vessel : {
+        id: vessel.id,
+        name: vessel.name,
+        ...updatedVessel
+    });
+    io.emit("update_vessels", dummyData);
+    res.send('ok')
+})
 
 const PORT = 5000;
 server.listen(PORT, () => {

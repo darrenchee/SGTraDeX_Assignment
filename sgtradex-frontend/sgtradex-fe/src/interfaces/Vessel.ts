@@ -3,6 +3,6 @@ export interface Vessel {
     name: string;
     imo: number;
     lat: number;
-    lang: number;
+    lng: number;
     destination: string;
 }

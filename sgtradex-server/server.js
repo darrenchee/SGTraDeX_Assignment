@@ -18,26 +18,23 @@ const io = new Server(server, {
 
 io.on('connection', (socket) => {
     socket.emit("retrieve_data", dummyData);
-
-    socket.on("send_message", (data) => {
-        socket.emit("receive_message", { test: 'sending back message' })
-    })
 });
 
 app.post("/api/track", (req, res) => {
-
+    const date = new Date();
+    console.log(req.body, date);
+    res.status(200).send('ok');
 })
 
 app.post("/api/updated-vessel-information", (req, res) => {
     console.log("Received request body for /api/updated-vessel-information:", req.body);
     const updatedVessel = req.body;
     dummyData = dummyData.map(vessel => vessel.imo !== updatedVessel.imo ? vessel : {
-        id: vessel.id,
-        name: vessel.name,
+        ...vessel,
         ...updatedVessel
     });
-    io.emit("update_vessels", dummyData);
-    res.send('ok')
+    io.emit("update_vessels", { updatedData: dummyData, updatedVesselImo: updatedVessel.imo });
+    res.status(200).send('ok');
 })
 
 const PORT = 5000;
